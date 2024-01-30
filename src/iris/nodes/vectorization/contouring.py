@@ -8,6 +8,7 @@ from iris.io.class_configs import Algorithm
 from iris.io.dataclasses import GeometryMask, GeometryPolygons
 from iris.io.errors import VectorizationError
 from iris.utils.math import area
+from google.colab.patches import cv2_imshow
 
 
 def filter_polygon_areas(
@@ -114,6 +115,17 @@ class ContouringAlgorithm(Algorithm):
         contours = self._filter_contours(contours)
 
         if len(contours) != 1:
+            image_height = 903
+            image_width = 1530
+            blank_image = np.zeros((image_height, image_width, 3), dtype=np.uint8)
+
+            # Contours 그리기
+            cv2.drawContours(blank_image, contours, -1, (0, 255, 0), 2)
+
+            # 결과 이미지를 화면에 표시
+            cv2_imshow(blank_image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
             raise VectorizationError("_find_class_contours: Number of contours must be equal to 1.")
 
         return contours[0]
